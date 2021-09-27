@@ -93,6 +93,7 @@ class EMSESPSettingsForm extends Component<EMSESPSettingsFormProps> {
           rx_gpio: json.rx_gpio,
           tx_gpio: json.tx_gpio,
           pbutton_gpio: json.pbutton_gpio,
+          aux_gpio: json.aux_gpio,
           board_profile: event.target.value
         });
         this.setState({ processing: false });
@@ -341,6 +342,32 @@ class EMSESPSettingsForm extends Component<EMSESPSettingsFormProps> {
                 margin="normal"
               />
             </Grid>
+            <Grid item xs={4}>
+              <TextValidator
+                validators={[
+                  'required',
+                  'isNumber',
+                  'minNumber:0',
+                  'maxNumber:40',
+                  'matchRegexp:^((?!6|7|8|9|10|11|12|14|15|20|24|28|29|30|31)[0-9]*)$'
+                ]}
+                errorMessages={[
+                  'GPIO is required',
+                  'Must be a number',
+                  'Must be 0 or higher',
+                  'Max value is 40',
+                  'Not a valid GPIO'
+                ]}
+                name="aux_gpio"
+                label="Aux port GPIO (0=none)"
+                fullWidth
+                variant="outlined"
+                value={data.aux_gpio}
+                type="number"
+                onChange={handleValueChange('aux_gpio')}
+                margin="normal"
+              />
+            </Grid>
           </Grid>
         )}
 
@@ -349,6 +376,56 @@ class EMSESPSettingsForm extends Component<EMSESPSettingsFormProps> {
           General Options
         </Typography>
 
+        {data.aux_gpio !== 0 && (
+          <Grid
+            container
+            spacing={1}
+            direction="row"
+            justify="flex-start"
+            alignItems="flex-start"
+          >
+            <Grid item xs={4}>
+              <SelectValidator
+                name="aux_function"
+                value={data.aux_function}
+                fullWidth
+                variant="outlined"
+                onChange={handleValueChange('aux_function')}
+                margin="normal"
+                label="Auxiliary port function"
+              >
+                <MenuItem value={0}>None</MenuItem>
+                <MenuItem value={1}>Pool circulation pump</MenuItem>
+              </SelectValidator>
+            </Grid>
+            {data.aux_function === 1 && (
+              <Grid item xs={4}>
+                <TextValidator
+                  validators={[
+                    'required',
+                    'isNumber',
+                    'minNumber:0',
+                    'maxNumber:600'
+                  ]}
+                  errorMessages={[
+                    'Value is required',
+                    'Must be a number',
+                    'Must be 0 or higher',
+                    'Max value is 1800 (30 min)'
+                  ]}
+                  name="aux_pump_delay"
+                  label="Pool pump stop delay (seconds)"
+                  fullWidth
+                  variant="outlined"
+                  value={data.aux_pump_delay}
+                  type="number"
+                  onChange={handleValueChange('aux_pump_delay')}
+                  margin="normal"
+                />
+              </Grid>
+            )}
+          </Grid>
+        )}
         {data.led_gpio !== 0 && (
           <BlockFormControlLabel
             control={

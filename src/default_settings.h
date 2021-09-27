@@ -92,6 +92,14 @@
 #define EMSESP_DEFAULT_BOARD_PROFILE "S32" // Gateway S32
 #endif
 
+#ifndef EMSESP_DEFAULT_AUX_FUNCTION
+#define EMSESP_DEFAULT_AUX_FUNCTION 0 // None
+#endif
+
+#ifndef EMSESP_DEFAULT_AUX_PUMP_DELAY
+#define EMSESP_DEFAULT_AUX_PUMP_DELAY 300 // run pump for 5min after normal off conditions
+#endif
+
 // Default GPIO PIN definitions - based on Wemos/Nodemcu
 
 #ifndef EMSESP_DEFAULT_RX_GPIO
@@ -112,6 +120,10 @@
 
 #ifndef EMSESP_DEFAULT_PBUTTON_GPIO
 #define EMSESP_DEFAULT_PBUTTON_GPIO 0
+#endif
+
+#ifndef EMSESP_DEFAULT_AUX_GPIO
+#define EMSESP_DEFAULT_AUX_GPIO 22
 #endif
 
 // MQTT

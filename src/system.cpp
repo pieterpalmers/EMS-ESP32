@@ -16,7 +16,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "system.h"
 #include "emsesp.h" // for send_raw_telegram() command
 
 #if defined(EMSESP_DEBUG)
@@ -242,6 +241,11 @@ void System::get_settings() {
         hide_led_ = settings.hide_led;
         led_gpio_ = settings.led_gpio;
 
+        // AUX
+        aux_gpio_ = settings.aux_gpio;
+        aux_function_ = settings.aux_function;
+        aux_pump_delay_ = settings.aux_pump_delay;
+
         // Board profile
         board_profile_ = settings.board_profile;
     });
@@ -319,6 +323,7 @@ void System::start(uint32_t heap_start) {
     button_init(false);  // the special button
     network_init(false); // network
     syslog_start();      // start Syslog
+    aux_init(false);     // start aux (if any)   
 
     EMSESP::init_uart(); // start UART
 }
@@ -402,6 +407,33 @@ void System::led_init(bool refresh) {
         digitalWrite(led_gpio_, hide_led_ ? !LED_ON : LED_ON);
     }
 }
+
+// Reload Auxiliary port function
+void System::aux_init(bool refresh) {
+    if (refresh) {
+        get_settings();
+    }
+    LOG_INFO("init aux, function: %d, gpio: %d, delay: %d seconds",aux_function_, aux_gpio_,aux_pump_delay_);
+
+
+    if ((aux_gpio_ != 0) && is_valid_gpio(aux_gpio_)) {
+        if (aux_function_ != AUX_FUNCTION::AUX_PUMP) {
+            PoolPump::Delete();
+        }
+        switch (aux_function_) {
+            case AUX_FUNCTION::AUX_PUMP: {
+                // Pool circulation pump
+                PoolPump::SetValues(aux_gpio_,aux_pump_delay_);
+                LOG_INFO("Setting poolpump to on, gpio: %d, delay: %d seconds",aux_gpio_,aux_pump_delay_);
+                break;
+            }
+            default: {
+    
+            }
+        }    
+    }
+}
+
 
 // returns true if OTA is uploading
 bool System::upload_status() {
@@ -911,6 +943,9 @@ bool System::command_settings(const char * value, const int8_t id, JsonObject & 
         node["analog_enabled"]       = settings.analog_enabled;
         node["pbutton_gpio"]         = settings.pbutton_gpio;
         node["board_profile"]        = settings.board_profile;
+        node["aux_gpio"]             = settings.aux_gpio;
+        node["aux_function"]         = settings.aux_function;
+        node["aux_pump_delay"]       = settings.aux_pump_delay;
     });
 
     return true;
@@ -1005,21 +1040,21 @@ bool System::command_test(const char * value, const int8_t id) {
 // returns false if profile is not found
 bool System::load_board_profile(std::vector<uint8_t> & data, const std::string & board_profile) {
     if (board_profile == "S32") {
-        data = {2, 18, 23, 5, 0}; // BBQKees Gateway S32
+        data = {2, 18, 23, 5, 0, 22}; // BBQKees Gateway S32
     } else if (board_profile == "E32") {
-        data = {2, 4, 5, 17, 33}; // BBQKees Gateway E32
+        data = {2, 4, 5, 17, 33, 32}; // BBQKees Gateway E32
     } else if (board_profile == "MH-ET") {
-        data = {2, 18, 23, 5, 0}; // MH-ET Live D1 Mini
+        data = {2, 18, 23, 5, 0, 0}; // MH-ET Live D1 Mini
     } else if (board_profile == "NODEMCU") {
-        data = {2, 18, 23, 5, 0}; // NodeMCU 32S
+        data = {2, 18, 23, 5, 0, 0}; // NodeMCU 32S
     } else if (board_profile == "LOLIN") {
-        data = {2, 18, 17, 16, 0}; // Lolin D32
+        data = {2, 18, 17, 16, 0, 0}; // Lolin D32
     } else if (board_profile == "OLIMEX") {
-        data = {0, 0, 36, 4, 34}; // Olimex ESP32-EVB (uses U1TXD/U1RXD/BUTTON, no LED or Dallas)
+        data = {0, 0, 36, 4, 34, 0}; // Olimex ESP32-EVB (uses U1TXD/U1RXD/BUTTON, no LED or Dallas)
     } else if (board_profile == "TLK110") {
-        data = {2, 4, 5, 17, 33}; // Generic Ethernet (TLK110)
+        data = {2, 4, 5, 17, 33, 0}; // Generic Ethernet (TLK110)
     } else if (board_profile == "LAN8720") {
-        data = {2, 4, 5, 17, 33}; // Generic Ethernet (LAN8720)
+        data = {2, 4, 5, 17, 33, 0}; // Generic Ethernet (LAN8720)
     } else {
         data = {EMSESP_DEFAULT_LED_GPIO, EMSESP_DEFAULT_DALLAS_GPIO, EMSESP_DEFAULT_RX_GPIO, EMSESP_DEFAULT_TX_GPIO, EMSESP_DEFAULT_PBUTTON_GPIO};
         return (board_profile == "CUSTOM");

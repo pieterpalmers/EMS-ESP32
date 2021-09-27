@@ -71,6 +71,7 @@ MAKE_PSTR_WORD(publish)
 MAKE_PSTR_WORD(timeout)
 MAKE_PSTR_WORD(board_profile)
 MAKE_PSTR_WORD(sensorname)
+MAKE_PSTR_WORD(pump)
 
 // for commands
 MAKE_PSTR_WORD(call)
@@ -253,7 +254,7 @@ MAKE_PSTR_LIST(enum_reset, F_(maintenance), F_(error))
 MAKE_PSTR_LIST(enum_bool, F_(off), F_(on))
 
 //heatpump
-MAKE_PSTR_LIST(enum_hpactivity, F("none"), F("heating"), F("cooling"), F("warm water"), F("pool"))
+MAKE_PSTR_LIST(enum_hpactivity, F("none"), F("heating"), F("cooling"), F("warm water"), F("pool"), F("pool/mix"),F("UNKNOWN"),F("purging") )
 
 // mixer
 MAKE_PSTR_LIST(enum_shunt, F("stopped"), F("opening"), F("closing"), F("open"), F("close"))
@@ -475,6 +476,8 @@ MAKE_PSTR_LIST(poolSetTemp, F("poolsettemp"), F("pool set temperature"))
 MAKE_PSTR_LIST(poolTemp, F("pooltemp"), F("pool temperature"))
 MAKE_PSTR_LIST(poolShuntStatus, F("poolshuntstatus"), F("pool shunt status opening/closing"))
 MAKE_PSTR_LIST(poolShunt, F("poolshunt"), F("pool shunt open/close (0% = pool / 100% = heat)"))
+MAKE_PSTR_LIST(poolPump, F("poolpump"), F("pool circulation pump activated"))
+
 
 // the following are warm water for the boiler and automatically tagged with 'ww'
 MAKE_PSTR_LIST(wwSelTemp, F("wwseltemp"), F("selected temperature"))
