@@ -103,6 +103,7 @@ MAKE_PSTR_WORD(generic)
 MAKE_PSTR_WORD(analogsensor)
 MAKE_PSTR_WORD(unknown)
 MAKE_PSTR_WORD(dallassensor)
+MAKE_PSTR_WORD(canbus)
 
 // format strings
 MAKE_PSTR(master_thermostat_fmt, "Master Thermostat device ID: %s")

@@ -58,6 +58,7 @@ Console      EMSESP::console_;      // telnet and serial console
 DallasSensor EMSESP::dallassensor_; // Dallas sensors
 AnalogSensor EMSESP::analogsensor_; // Analog sensors
 Shower       EMSESP::shower_;       // Shower logic
+CanBus       EMSESP::canbus_;       // CAN bus
 
 // static/common variables
 uint8_t  EMSESP::actual_master_thermostat_ = EMSESP_DEFAULT_MASTER_THERMOSTAT; // which thermostat leads when multiple found
@@ -1419,6 +1420,9 @@ void EMSESP::start() {
 #endif
 
     webServer.begin(); // start the web server
+
+    /* CAN bus setup */
+    canbus_.start();
 }
 
 // fetch devices one by one
@@ -1460,6 +1464,8 @@ void EMSESP::loop() {
 
         // force a query on the EMS devices to fetch latest data at a set interval (1 min)
         scheduled_fetch_values();
+
+        canbus_.loop();
     }
 
     console_.loop(); // telnet/serial console

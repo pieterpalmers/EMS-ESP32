@@ -59,6 +59,7 @@
 #include "roomcontrol.h"
 #include "command.h"
 #include "version.h"
+#include "can.h"
 
 #define WATCH_ID_NONE 0 // no watch id set
 
@@ -224,6 +225,7 @@ class EMSESP {
     static Shower       shower_;
     static RxService    rxservice_;
     static TxService    txservice_;
+    static CanBus       canbus_;
 
     // web controllers
     static ESP8266React            esp8266React;
